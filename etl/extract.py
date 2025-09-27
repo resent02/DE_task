@@ -1,5 +1,6 @@
+import logging
 import os
-from logging import getLogger
+import sys
 
 import requests
 from dotenv import load_dotenv
@@ -7,15 +8,21 @@ from psycopg2 import connect
 
 load_dotenv()
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
 
-log = getLogger(__name__)
+
+log = logging.getLogger("Extract")
 API_URL = "https://jsonplaceholder.typicode.com/posts"
 
 
 def DB_URL() -> str:
     host = os.getenv("DB_HOST", "localhost")
     port = os.getenv("DB_PORT", "5432")
-    db = os.getenv("DB_EXTRACT_TABLE_NAME", "vk_db")
+    db = os.getenv("DB_NAME", "vk_db")
     user = os.getenv("DB_USER", "vk_user")
     password = os.getenv("DB_PASSWORD", "vk_password")
 
@@ -38,6 +45,7 @@ def get_posts() -> list[Post] | None:
             raise Exception()
 
         data = [Post(**item) for item in req.json()]
+        log.info("Posts fetched successfully.")
         return data
 
     except Exception as e:
@@ -59,6 +67,7 @@ def import_to_db(data: list[Post]):
                 (post.id, post.userId, post.title, post.body),
             )
         connection.commit()
+        log.info("Posts inserted successfully.")
     except Exception as e:
         log.error(f"Error inserting posts into DB: {e}")
         connection.rollback()
