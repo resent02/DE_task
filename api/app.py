@@ -29,7 +29,7 @@ def get_db_connection():
     conn = psycopg2.connect(DB_URL())
     return conn
 
-@app.get("/top_users_by_posts", response_model=List[UserPostStats])
+@app.get("/top", response_model=List[UserPostStats])
 def get_top_users():
     conn = get_db_connection()
     cur = conn.cursor()
