@@ -1,5 +1,0 @@
-SHELL=/bin/bash
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-
-*/5 * * * * root set -a; source /app/.env || true; set +a; cd /app && /usr/local/bin/python extract.py >> /var/log/cron.log 2>&1
-*/5 * * * * root set -a; source /app/.env || true; set +a; cd /app && /usr/local/bin/python transform.py >> /var/log/cron.log 2>&1
