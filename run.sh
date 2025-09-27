@@ -2,12 +2,14 @@
 set -eu
 
 
-CRON_TEMPLATE="/app/cronfile.tmpl"
-CRON_FILE="/etl/cronfile"
+CRON_TEMPLATE="etl/cronfile.templ"
+CRON_FILE="etl/cronfile"
 
 
 if [ -f ".env" ]; then
-  export $(cat ".env" | grep -v '#' | xargs)
+  set -a
+  source .env
+  set +a
 fi
 
 
@@ -18,11 +20,14 @@ fi
 
 
 echo "Generating new cronfile from template..."
+if [ -f "$CRON_FILE" ]; then
+  rm "$CRON_FILE"
+fi
 sed "s~{{CRON_SCHEDULE}}~${CRON_SCHEDULE}~g" "$CRON_TEMPLATE" > "$CRON_FILE"
 
 
-# echo "Rebuilding and restarting containers..."
-# docker-compose build
-# docker-compose up -d
+echo "Rebuilding and restarting containers..."
+docker-compose build
+docker-compose up -d
 
-# echo "Cronfile updated and Docker containers restarted."
+echo "Cronfile updated and Docker containers restarted."
