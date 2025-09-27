@@ -31,3 +31,13 @@ docker-compose build
 docker-compose up -d
 
 echo "Cronfile updated and Docker containers restarted."
+
+
+echo "Creating virtual env and installing dependencies..."
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r api/requirements.txt
+
+echo "Setup complete. Running API server..."
+python api/app.py
